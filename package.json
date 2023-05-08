@@ -16,7 +16,7 @@
   "dependencies": {
     "int64-buffer": "^0.1.9",
     "leb": "^0.3.0",
-    "lzma": "^2.3.2"
+    "lzma-native": "^8.0.6"
   },
   "repository": {
     "type": "git",

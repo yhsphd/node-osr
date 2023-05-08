@@ -1,6 +1,6 @@
 const fs = require('fs')
 const leb = require('leb')
-const lzma = require('lzma')
+const lzma = require('lzma-native')
 const int64 = require('int64-buffer')
 
 const EPOCH = 621355968000000000
@@ -129,7 +129,7 @@ function _serialize(data, cb){
 
 		if(typeof cb === 'undefined'){
 			// sync
-			let replay_data = Buffer.from(lzma.compress(data.replay_data || ''))
+			let replay_data = Buffer.from(lzma.LZMA().compress(data.replay_data || ''))
 			let replay_length = writeInteger(replay_data.length)
 			let unknown = writeLong(data.unknown || 0)
 
@@ -138,7 +138,7 @@ function _serialize(data, cb){
 				mods, life_bar, timestamp, replay_length, replay_data, unknown])
 		}else{
 			// async
-			lzma.compress(data.replay_data || '', 1, (res, err) => {
+			lzma.LZMA().compress(data.replay_data || '', 1, (res, err) => {
 				let replay_data = Buffer.from(res)
 				let replay_length = writeInteger(replay_data.length)
 				let unknown = writeLong(data.unknown || 0)
@@ -262,11 +262,11 @@ function _read(buff, cb){
 	}
 	function readCompressed(buffer, length, cb){
 		offset += length
-		return length != 0 ? lzma.decompress(buffer.slice(offset-length, offset), cb) : cb(null,null)
+		return length != 0 ? lzma.LZMA().decompress(buffer.slice(offset-length, offset), cb) : cb(null,null)
 	}
 	function readCompressedSync(buffer, length){
 		offset += length
-		return length != 0 ? lzma.decompress(buffer.slice(offset-length, offset)) : null
+		return length != 0 ? lzma.LZMA().decompress(buffer.slice(offset-length, offset)) : null
 	}
 }
 
